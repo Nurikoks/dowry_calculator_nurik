@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dowry Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .highlight {
+      font-weight: bold;
+    }
+    label, select, input[type=checkbox], input[type=radio] {
+      margin: 5px 0;
+    }
+    label {
+      display: inline-block;
+      margin-bottom: 5px;
+    }
+    input[type="checkbox"],
+    input[type="radio"] {
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #666;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+<h1>Dowry Calculator</h1>
+
+<label>Education:
+  <select id="education">
+    <option value="1.5">Undergraduate degree</option>
+    <option value="1.2">College degree</option>
+    <option value="1.05">High school degree</option>
+    <option value="0.9">Middle school degree</option>
+  </select>
+</label>
+
+<label>Family Net Worth:
+  <select id="networth">
+    <option value="2">More than $10,000</option>
+    <option value="1.5">$5,000 - $10,000</option>
+    <option value="1.2">Less than $5,000</option>
+  </select>
+</label>
+
+<label>Caste:
+  <select id="caste">
+    <option value="100">Brahmin</option>
+    <option value="50">Kshatriya</option>
+    <option value="20">Vaishya</option>
+    <option value="10">Shudra</option>
+    <option value="-50">Untouchable</option>
+  </select>
+</label>
+
+<fieldset>
+  <legend>Skills:</legend>
+  <label><input type="checkbox" class="skill" value="10">Playing musical instrument</label><br>
+  <label><input type="checkbox" class="skill" value="20">Good cook</label><br>
+  <label><input type="checkbox" class="skill" value="15">Easygoing character</label><br>
+  <label><input type="checkbox" class="skill" value="10">Sings well</label>
+</fieldset>
+
+<fieldset>
+  <legend>Age:</legend>
+  <label><input type="radio" name="age" value="1.5">18-23</label><br>
+  <label><input type="radio" name="age" value="1.2">24-27</label><br>
+  <label><input type="radio" name="age" value="0.95">28+</label>
+</fieldset>
+
+<fieldset>
+  <legend>Reputation:</legend>
+  <label><input type="checkbox" class="reputation" value="0.85">Gossips about parent's attitude</label><br>
+  <label><input type="checkbox" class="reputation" value="0.9">Gossips about character</label><br>
+  <label><input type="checkbox" class="rep-deduction" value="-20">General gossips</label>
+</fieldset>
+
+<button onclick="calculatePrice()">Calculate Price</button>
+<div id="result"></div>
+
+<footer>
+  ⚠️ This project is purely for educational purposes. We do not support or promote the dowry system in any form. Dowry practices are unethical and illegal in many countries, including India.
+</footer>
+
+<script>
+  function calculatePrice() {
+    let basePrice = 100;
+    let education = parseFloat(document.getElementById("education").value);
+    let networth = parseFloat(document.getElementById("networth").value);
+    let caste = parseInt(document.getElementById("caste").value);
+
+    let skills = Array.from(document.querySelectorAll(".skill:checked"))
+      .reduce((acc, el) => acc + parseInt(el.value), 0);
+
+    let ageRadio = document.querySelector("input[name='age']:checked");
+    let age = ageRadio ? parseFloat(ageRadio.value) : 1;
+
+    let reputationCoef = Array.from(document.querySelectorAll(".reputation:checked"))
+      .reduce((acc, el) => acc * parseFloat(el.value), 1);
+
+    let repDeduction = Array.from(document.querySelectorAll(".rep-deduction:checked"))
+      .reduce((acc, el) => acc + parseFloat(el.value), 0);
+
+    let finalPrice = basePrice * education * networth * age * reputationCoef + caste + skills + repDeduction;
+    finalPrice = Math.max(0, Math.round(finalPrice));
+
+    document.body.style.backgroundColor = "#f4faff";
+    const resultBox = document.getElementById("result");
+    resultBox.innerHTML = `<span class='highlight'>Final Price: $${finalPrice}</span>`;
+    resultBox.querySelector(".highlight").style.color = finalPrice > 100 ? "green" : "red";
+
+    if (finalPrice < 50 && reputationCoef < 1) {
+      resultBox.innerHTML += "<br><em>⚠️ Warning: Low value AND bad reputation!</em>";
+    }
+    if (skills === 0 || repDeduction <= -20) {
+      resultBox.innerHTML += "<br><em>ℹ️ Tip: Try adding some skills or avoid bad gossip.</em>";
+    }
+    if (!(education > 1)) {
+      resultBox.innerHTML += "<br><em>📌 Education level could be improved.</em>";
+    }
+  }
+</script>
+</body>
+</html>
+
+
+
+
+
